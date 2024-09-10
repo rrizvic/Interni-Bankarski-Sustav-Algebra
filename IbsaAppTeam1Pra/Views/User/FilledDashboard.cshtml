@@ -1,0 +1,38 @@
+﻿@model List<IbsaAppTeam1Pra.Models.TransactionHistory>
+@{
+    ViewData["Title"] = "FilledDashboard";
+}
+
+<form style="flex: 1; margin-left: 20px; border: 0.8px solid black; border-radius: 10px; padding: 30px; padding-left: 180px; padding-right: 180px;">
+    <h1>Pregled prometa:</h1>
+
+    @* Table with four columns: Datum, Iznos, Primatelj, Opis *@
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Iznos</th>
+                <th>Primatelj</th>
+                <th>Opis</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var history in Model) // Fixed typo here
+            {
+                <tr>
+                    <td>@history.Date.ToString("dd.MM.yyyy")</td>
+                    <td>@history.Amount</td>
+                    <td>@history.ReceiverName</td>
+                    <td>@history.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary mt-3">Filtriraj</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

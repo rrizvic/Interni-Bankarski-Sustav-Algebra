@@ -1,0 +1,48 @@
+﻿@model User 
+
+@{
+        ViewData["Title"] = "AccountOptions";
+}
+
+
+<h3>Uplata</h3>
+<form asp-action="AccountOptions" method="post">
+    <div class="form-group">
+        <label asp-for="AccountOne.AccountNumber" class="control-label">Pay To:</label>
+        <select asp-for="AccountOne.AccountNumber" class="form-control">
+            <option>Select Account</option>
+            <option value="AccountOne.AccountNumber">2345675456</option>
+        </select>
+        <span asp-validation-for="AccountOne.AccountNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AccountOne.Balance" class="control-label">Amount:</label>
+        <input asp-for="AccountOne.Balance" class="form-control" />
+        <span asp-validation-for="AccountOne.Balance" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3" name="Uplati">Uplati</button>
+</form>
+
+<hr />
+
+<h3>Create Second Account</h3>
+<form asp-action="AccountOptions" method="post">
+    <div class="form-group">
+        <label asp-for="AccountTwo" class="control-label">Account Number:</label>
+        <input asp-for="AccountTwo" class="form-control" />
+        <span asp-validation-for="AccountTwo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="AccountTwo.currency" class="control-label">Currency:</label>
+        <select asp-for="AccountTwo.currency" class="form-control">
+            <option value="HRK">HRK</option>
+            <option value="EUR">EUR</option>
+        </select>
+        <span asp-validation-for="AccountTwo.currency" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-secondary mt-3" name="createAccount">Create Account</button>
+</form>
