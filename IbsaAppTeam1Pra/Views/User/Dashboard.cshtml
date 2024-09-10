@@ -1,0 +1,103 @@
+﻿@model IbsaAppTeam1Pra.Models.Transaction
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1>Plaćanje</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Dashboard">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Sender.AccountOne" class="control-label">Broj računa platitelja:</label>
+                <input asp-for="Sender.AccountOne" class="form-control" />
+                <span asp-validation-for="Sender.AccountOne" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label">Iznos:</label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiverName" class="control-label">Primatelj:</label>
+                <input asp-for="ReceiverName" class="form-control" />
+                <span asp-validation-for="ReceiverName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiverAccountNumber" class="control-label">Broj računa primatelja:</label>
+                <input asp-for="ReceiverAccountNumber" class="form-control" />
+                <span asp-validation-for="ReceiverAccountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Opis plaćanja:</label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label">Datum plaćanja:</label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Plati" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<form style="flex: 1; margin-left: 20px; border: 0.8px solid black; border-radius: 10px; padding: 30px; padding-left: 180px; padding-right: 180px;">
+    <h1>Pregled prometa:</h1>
+    <div class="form-group">
+        <label asp-for="Date" class="control-label">Od:</label>
+        <input asp-for="Date" class="form-control" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Date" class="control-label">Do:</label>
+        <input asp-for="Date" class="form-control" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+    @*table with four columns: Datum, Iznos, Primatelj, Opis*@
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Datum
+                </th>
+                <th>
+                    Iznos
+                </th>
+                <th>
+                    Primatelj
+                </th>
+                <th>
+                    Opis
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.ReceiverName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Description)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary mt-3">Filtriraj</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
