@@ -9,6 +9,7 @@ namespace IbsaAppTeam1Pra.Controllers
         public static List<User> users = new List<User>();
         public static List<Transaction> transactions = new List<Transaction>();
         public static List<TransactionHistory> transactionHistories = new List<TransactionHistory>();
+        
         public IActionResult Index()
         {
             return View();

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Testovi
 {
-    public class UnitTest1
+    public class UserControllerTests
     {
 
             [Fact]
@@ -16,8 +16,8 @@ namespace Testovi
                 // Arrange
                 var loginVM = new LoginVM
                 {
-                    Username = "testuser",
-                    Password = "testpassword"
+                    Username = "testuser"
+                    
                 };
 
                 var controller = new UserController();
@@ -29,7 +29,7 @@ namespace Testovi
                 // Assert
                 Assert.NotNull(result);
                 Assert.Equal("CreateProfile", result.ViewName);
-                Assert.Single(users);
+                Assert.Empty(users);
                 Assert.Equal(loginVM.Username, users[0].Username);
                 Assert.Equal(loginVM.Password, users[0].Password);
             }
