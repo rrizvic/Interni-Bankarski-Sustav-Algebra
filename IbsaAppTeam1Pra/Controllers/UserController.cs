@@ -48,6 +48,7 @@ namespace IbsaAppTeam1Pra.Controllers
                 AccountNumber = userAccount.AccountNumber,
                 currency = userAccount.Currency == "EUR" ? Account.Currency.EUR : Account.Currency.HRK
             };
+            // new user object with data from the form
 
             var user = new User
             {
@@ -120,7 +121,7 @@ namespace IbsaAppTeam1Pra.Controllers
                 Description = transaction.Description,
                 Date = DateTime.Now
             };
-
+            // Add transaction to the list of transactions
             transactions.Add(trans);
             var transactionHistory = new TransactionHistory
             {
