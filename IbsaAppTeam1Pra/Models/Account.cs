@@ -10,5 +10,6 @@
         public string AccountNumber { get; set; }
         public Currency currency { get; set; }
         public decimal Balance { get; set; }
+        public string PayerAccountNumber { get; set; }
     }
 }
