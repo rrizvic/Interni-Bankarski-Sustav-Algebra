@@ -8,11 +8,87 @@ namespace IbsaAppTeam1Pra.Controllers
     public class UserController : Controller
     {
         public static List<User> users = new List<User>();
+        public static List<LoginVM> loginUserData = new List<LoginVM>();
         public static List<Transaction> transactions = new List<Transaction>();
         public static List<TransactionHistory> transactionHistories = new List<TransactionHistory>();
+        
+        public static string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "transactions.txt");
+        private const string DEL = ",";
+
+        public static string usersPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "users.txt");
+
+        public static string userDetailsPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "userDetails.txt");
+        
+
+            public void SaveUsersToFile()
+        {
+            using (StreamWriter sw = new StreamWriter(usersPath))
+            {
+                foreach (var user in loginUserData)
+                {
+                    sw.WriteLine(user.Username + DEL + user.Password);
+                }
+            }
+        }
+
+        public void ReadUsersFromFile()
+        {
+            if (System.IO.File.Exists(usersPath))
+            {
+                using (StreamReader sr = new StreamReader(usersPath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(DEL);
+                        LoginVM loginVM = new LoginVM
+                        {
+                            Username = parts[0],
+                            Password = parts[1]
+                        };
+                        loginUserData.Add(loginVM);
+                    }
+                }
+            }
+        }
+            public void SaveTransactionsToFile()
+        {
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                foreach (var transaction in transactions)
+                {
+                    sw.WriteLine(transaction.Sender.FirstName + DEL + transaction.Sender.LastName + DEL + transaction.ReceiverName + DEL + transaction.ReceiverAccountNumber + DEL + transaction.Amount + DEL + transaction.Description + DEL + transaction.Date);
+                }
+            }
+        }
+        // create method for reading transactions from the file
+        public void ReadTransactionsFromFile()
+        {
+            if (System.IO.File.Exists(path))
+            {
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(DEL);
+                        Transaction transaction = new Transaction
+                        {
+                            Sender = new User { FirstName = parts[0], LastName = parts[1] },
+                            ReceiverName = parts[2],
+                            ReceiverAccountNumber = parts[3],
+                            Amount = decimal.Parse(parts[4]),
+                            Description = parts[5],
+                            Date = DateTime.Parse(parts[6])
+                        };
+                        transactions.Add(transaction);
+                    }
+                }
+            }
+        }
         LoginVM bankar = new LoginVM
         {
-            Username = "bankar",
+            Username = "bankar@algebra.hr",
             Password = "bankar123"
         };
         public IActionResult Index()
@@ -52,10 +128,12 @@ namespace IbsaAppTeam1Pra.Controllers
             {
                 return RedirectToAction("BankarDashboard");
             }
+            ReadUsersFromFile();
             // check users and if user doesnt exist, add user and redirect to create profile view
-            if (!users.Any(u => u.Username == user.Username))
+            if (!loginUserData.Any(u => u.Username == user.Username))
             {
                 users.Add(user);
+                SaveUsersToFile();
                 HttpContext.Session.SetString("UserLoggedIn", user.Username);
                 HttpContext.Session.SetString("ProfileCreated", "false");
                 return View("CreateProfile");
@@ -63,6 +141,7 @@ namespace IbsaAppTeam1Pra.Controllers
             // if user exists, redirect to dashboard view
             HttpContext.Session.SetString("UserLoggedIn", user.Username);
             HttpContext.Session.SetString("ProfileCreated", "true");
+            
             return RedirectToAction("Dashboard", user);
         }
 
@@ -148,10 +227,13 @@ namespace IbsaAppTeam1Pra.Controllers
 
         }
 
-        public IActionResult BankarDashboard(List<Transaction> transactions)
+        public IActionResult BankarDashboard(List<Transaction> transactionsList)
         {
-            transactions = transactions.OrderByDescending(t => t.Date).ToList();
-            return View(transactions);
+            // call ReadTransactionsFromFile(); and save them to transactions list
+            ReadTransactionsFromFile();
+            // sort transactions by date
+            transactionsList = transactions.OrderByDescending(t => t.Date).ToList();
+            return View(transactionsList);
         }
 
         public IActionResult Dashboard(User user)
@@ -188,7 +270,8 @@ namespace IbsaAppTeam1Pra.Controllers
                 Description = transaction.Description,
                 Date = trans.Date
             };
-
+            // add transaction to transactions.txt file
+            SaveTransactionsToFile();
             transactionHistories.Add(transactionHistory); // Add to history
 
             return RedirectToAction("FilledDashboard");
