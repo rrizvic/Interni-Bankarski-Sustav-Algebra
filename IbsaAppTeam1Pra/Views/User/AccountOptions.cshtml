@@ -1,48 +1,78 @@
-﻿@model User 
+﻿@model User
 
 @{
-        ViewData["Title"] = "AccountOptions";
+    ViewData["Title"] = "AccountOptions";
 }
 
+<div class="forms-container d-flex justify-content-between">
+    <!-- First Form (Uplata) -->
+    <div class="form-section bordered-form">
+        <h3>Uplata</h3>
+        <form asp-action="AccountOptions" method="post">
+            <div class="form-group">
+                <label asp-for="AccountOne.AccountNumber" class="control-label">Pay To:</label>
+                <select asp-for="AccountOne.AccountNumber" class="form-control">
+                    <option>Select Account</option>
+                    <option value="@Model.AccountOne.AccountNumber">@Model.AccountOne.AccountNumber</option>
+                </select>
+                <span asp-validation-for="AccountOne.AccountNumber" class="text-danger"></span>
+            </div>
 
-<h3>Uplata</h3>
-<form asp-action="AccountOptions" method="post">
-    <div class="form-group">
-        <label asp-for="AccountOne.AccountNumber" class="control-label">Pay To:</label>
-        <select asp-for="AccountOne.AccountNumber" class="form-control">
-            <option>Select Account</option>
-            <option value="AccountOne.AccountNumber">2345675456</option>
-        </select>
-        <span asp-validation-for="AccountOne.AccountNumber" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="AccountOne.Balance" class="control-label">Amount:</label>
+                <input asp-for="AccountOne.Balance" class="form-control" />
+                <span asp-validation-for="AccountOne.Balance" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                    <label asp-for="AccountOne.PayerAccountNumber" class="control-label">Broj računa platitelja:</label>
+                    <input asp-for="AccountOne.PayerAccountNumber" class="form-control" />
+                    <span asp-validation-for="AccountOne.PayerAccountNumber" class="text-danger"></span>
+                </div>
+
+
+            <button type="submit" class="btn btn-primary mt-3" name="Uplati">Uplati</button>
+        </form>
     </div>
 
-    <div class="form-group">
-        <label asp-for="AccountOne.Balance" class="control-label">Amount:</label>
-        <input asp-for="AccountOne.Balance" class="form-control" />
-        <span asp-validation-for="AccountOne.Balance" class="text-danger"></span>
+    <!-- Second Form (Create Second Account) -->
+    <div class="form-section bordered-form">
+        <h3>Create Second Account</h3>
+        <form asp-action="AccountOptions" method="post">
+            <div class="form-group">
+                <label asp-for="AccountTwo" class="control-label">Account Number:</label>
+                <input asp-for="AccountTwo" class="form-control" />
+                <span asp-validation-for="AccountTwo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AccountTwo.currency" class="control-label">Currency:</label>
+                <select asp-for="AccountTwo.currency" class="form-control">
+                    <option value="HRK">HRK</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                <span asp-validation-for="AccountTwo.currency" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-secondary mt-3" name="createAccount">Create Account</button>
+        </form>
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary mt-3" name="Uplati">Uplati</button>
-</form>
+<style>
+    .forms-container {
+    display: flex;
+    justify-content: space-between; /* Adjusts space between the two forms */
+    gap: 20px; /* Adjusts the gap between the two forms */
+}
 
-<hr />
+.form-section {
+    width: 48%; /* Ensures each form section takes up half the available width */
+}
 
-<h3>Create Second Account</h3>
-<form asp-action="AccountOptions" method="post">
-    <div class="form-group">
-        <label asp-for="AccountTwo" class="control-label">Account Number:</label>
-        <input asp-for="AccountTwo" class="form-control" />
-        <span asp-validation-for="AccountTwo" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="AccountTwo.currency" class="control-label">Currency:</label>
-        <select asp-for="AccountTwo.currency" class="form-control">
-            <option value="HRK">HRK</option>
-            <option value="EUR">EUR</option>
-        </select>
-        <span asp-validation-for="AccountTwo.currency" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-secondary mt-3" name="createAccount">Create Account</button>
-</form>
+    .bordered-form {
+        border: 1px solid #ccc; /* Adds a light gray border */
+        padding: 15px; /* Adds padding inside the form */
+        border-radius: 5px; /* Optional: Adds rounded corners to the border */
+        background-color: #f9f9f9; /* Optional: Adds a light background for better contrast */
+    }
+</style>
