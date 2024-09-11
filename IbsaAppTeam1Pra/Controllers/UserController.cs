@@ -249,7 +249,8 @@ namespace IbsaAppTeam1Pra.Controllers
         public IActionResult Dashboard(Transaction transaction)
         {
             var sender = transaction.Sender;
-            
+
+
             var trans = new Transaction
             {
                 Sender = sender,
