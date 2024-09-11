@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/IbsaAppTeam1Pra.styles.css" asp-append-version="true" />
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 </head>
 <body>
     <header>
@@ -17,16 +18,47 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                    <ul class="navbar-nav ml-auto">
+                        @if (HttpContextAccessor.HttpContext.Session.GetString("UserLoggedIn") != null)
+                        {
+                            // Check if profile is already created
+                            var profileCreated = HttpContextAccessor.HttpContext.Session.GetString("ProfileCreated");
+
+                            if (profileCreated == "true")
+                            {
+                                <!-- If the user has a profile, show Dashboard, Accounts, Logout -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Dashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="AccountOptions">Accounts</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <!-- If the user doesn't have a profile, show Create Profile and Logout -->
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CreateProfile">Create Profile</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <!-- If the user is not logged in, show the Login link -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
+
             </div>
         </nav>
     </header>
