@@ -5,9 +5,9 @@
 }
 
 
+<h1 class="text-center mt-5">PRIJAVA</h1>
 
 <div class="centered-container">
-    <h1 class="text-center">PRIJAVA</h1>
     <form asp-action="Login" class="centered-form">
     <div class="text-danger">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -22,7 +22,7 @@
         <input type="password" asp-for="Password" class="form-control form-control-sm" style="width: 250px;"/>
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary" style="margin:10px">Login</button>
 </form>
 </div>
 
@@ -39,16 +39,21 @@
     .centered-container {
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start; /* Align the form higher (start of the flex container) */
         height: 100vh; /* Full height viewport */
+        padding-top: 100px;
+        
     }
 
     .centered-form {
-        background-color: #f8f9fa;
+        background-color: white;
         padding: 20px;
-        border: 1px solid #e9ecef;
+        border: 1px solid black;
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding-right: 100px;
+        padding-left: 100px;
+        padding-top: 50px;
     }
 
 

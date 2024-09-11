@@ -56,10 +56,22 @@ namespace IbsaAppTeam1Pra.Controllers
             if (!users.Any(u => u.Username == user.Username))
             {
                 users.Add(user);
+                HttpContext.Session.SetString("UserLoggedIn", user.Username);
+                HttpContext.Session.SetString("ProfileCreated", "false");
                 return View("CreateProfile");
             }
             // if user exists, redirect to dashboard view
+            HttpContext.Session.SetString("UserLoggedIn", user.Username);
+            HttpContext.Session.SetString("ProfileCreated", "true");
             return RedirectToAction("Dashboard", user);
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+
+            
+            return RedirectToAction("Login", "User");
         }
 
         // create profile view where user enters his data and creates account
@@ -117,7 +129,6 @@ namespace IbsaAppTeam1Pra.Controllers
             var balance = user.AccountOne.Balance;
             if (Request.Form.ContainsKey("Uplati"))
             {
-                // if user clicked Uplati button, add balance to the user account
                 var account = user.AccountOne;
                 account.Balance += balance;
 
@@ -135,6 +146,12 @@ namespace IbsaAppTeam1Pra.Controllers
 
             return RedirectToAction("Dashboard", user);
 
+        }
+
+        public IActionResult BankarDashboard(List<Transaction> transactions)
+        {
+            transactions = transactions.OrderByDescending(t => t.Date).ToList();
+            return View(transactions);
         }
 
         public IActionResult Dashboard(User user)

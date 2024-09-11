@@ -1,0 +1,37 @@
+﻿@model List<Transaction>
+<!-- TransactionHistory is a class that contains a list of transactions -->
+@{
+    ViewData["Title"] = "BankarDashboard";
+}
+
+<form style="flex: 1; margin-left: 20px; border: 0.8px solid black; border-radius: 10px; padding: 30px; padding-left: 180px; padding-right: 180px;">
+    <h1>Pregled prometa:</h1>
+
+    
+    <!-- Transaction Table -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Iznos</th>
+                <th>Primatelj</th>
+                <th>Opis</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            @foreach (var transaction in Model)
+            {
+                <tr>
+                    <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
+                    <td>@transaction.Amount</td>
+                    <td>@transaction.ReceiverName</td>
+                    <td>@transaction.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Filter Button -->
+    <button type="submit" class="btn btn-primary mt-3">Filtriraj</button>
+</form>
