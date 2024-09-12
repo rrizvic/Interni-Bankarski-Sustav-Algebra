@@ -75,6 +75,26 @@ namespace Testovi
             Assert.Contains(controller.ModelState[""].Errors, e => e.ErrorMessage == "Invalid password. It must be at least 8 characters long.");
         }
 
+        [Fact]
+        public void Login_ShouldReturnError_WhenPasswordDoesNotContainNumbers()
+        {
+            // Arrange
+            var controller = new UserController();
+            var loginVM = new LoginVM
+            {
+                Username = "user@algebra.hr",
+                Password = "NoNumbersHere" // Invalid: does not contain any numbers
+            };
+
+            // Act
+            var result = controller.Login(loginVM) as ViewResult;
+
+            // Assert
+            Assert.False(controller.ModelState.IsValid);
+            Assert.True(controller.ModelState.ContainsKey("Password")); // Use the correct key here
+            Assert.Contains(controller.ModelState["Password"].Errors, e => e.ErrorMessage == "Password must contain at least one number.");
+        }
+
 
 
     }
