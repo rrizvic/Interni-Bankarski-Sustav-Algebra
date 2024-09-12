@@ -1,0 +1,52 @@
+﻿@model IbsaAppTeam1Pra.Models.Transaction
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1>Plaćanje</h1>
+
+<hr />
+    <div class="col-md-6">
+        <form id="paymentForm" form asp-action="Dashboard" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Sender.AccountOne" class="control-label">Broj računa platitelja:</label>
+                <input asp-for="Sender.AccountOne" class="form-control" />
+                <span asp-validation-for="Sender.AccountOne" class="text-danger"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Model" class="control-label">Iznos:</label>
+                    <input asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Model" class="control-label">Model i poziv na broj:</label>
+                    <input asp-for="Model" class="form-control" />
+                    <span asp-validation-for="Model" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ReceiverName" class="control-label">Primatelj:</label>
+                <input asp-for="ReceiverName" class="form-control" />
+                <span asp-validation-for="ReceiverName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiverAccountNumber" class="control-label">Broj računa primatelja:</label>
+                <input asp-for="ReceiverAccountNumber" class="form-control" />
+                <span asp-validation-for="ReceiverAccountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Opis plaćanja:</label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label">Datum plaćanja:</label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+        <button type="submit" class="btn btn-primary">Plati</button>
+        </form>
+        </div>

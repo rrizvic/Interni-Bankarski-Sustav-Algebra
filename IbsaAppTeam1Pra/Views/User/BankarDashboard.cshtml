@@ -34,4 +34,15 @@
 
     <!-- Filter Button -->
     <button type="submit" class="btn btn-primary mt-3">Filtriraj</button>
+
+    <buttton type="button" id="payment" class="btn btn-primary mt-3">Novo plaćanje</buttton>
 </form>
+
+@section Scripts {
+    <script>
+        document.getElementById("payment").addEventListener("click", function () {
+            window.location.href = '@Url.Action("BankarPayment", "User")';
+        });
+    </script>
+}
+

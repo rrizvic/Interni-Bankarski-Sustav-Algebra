@@ -2,6 +2,8 @@
 using IbsaAppTeam1Pra.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using System.Transactions;
+using Transaction = IbsaAppTeam1Pra.Models.Transaction;
 
 namespace IbsaAppTeam1Pra.Controllers
 {
@@ -61,9 +63,8 @@ namespace IbsaAppTeam1Pra.Controllers
                 }
             }
         }
-        // create method for reading transactions from the file
-        public void ReadTransactionsFromFile()
-        {
+               public void ReadTransactionsFromFile()
+                {
             if (System.IO.File.Exists(path))
             {
                 using (StreamReader sr = new StreamReader(path))
@@ -116,7 +117,6 @@ namespace IbsaAppTeam1Pra.Controllers
 
             if (!ModelState.IsValid)
             {
-                // If any of the above conditions are met, re-render the view with errors
                 return View(loginVM);
             }
             var user = new User
@@ -129,16 +129,23 @@ namespace IbsaAppTeam1Pra.Controllers
                 return RedirectToAction("BankarDashboard");
             }
             ReadUsersFromFile();
-            // check users and if user doesnt exist, add user and redirect to create profile view
-            if (!loginUserData.Any(u => u.Username == user.Username))
+
+            var existingUser = loginUserData.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
+
+            if (existingUser == null)
             {
-                users.Add(user);
+                loginUserData.Add(loginVM);
                 SaveUsersToFile();
                 HttpContext.Session.SetString("UserLoggedIn", user.Username);
                 HttpContext.Session.SetString("ProfileCreated", "false");
-                return View("CreateProfile");
+                var profileCreated = users.Any(u => u.Username == user.Username);
+
+                if (!profileCreated)
+                {
+                    return View("CreateProfile");
+                }
             }
-            // if user exists, redirect to dashboard view
+
             HttpContext.Session.SetString("UserLoggedIn", user.Username);
             HttpContext.Session.SetString("ProfileCreated", "true");
             
@@ -153,29 +160,34 @@ namespace IbsaAppTeam1Pra.Controllers
             return RedirectToAction("Login", "User");
         }
 
-        // create profile view where user enters his data and creates account
-
         public IActionResult CreateProfile()
         {
             return View();
         }
 
         [HttpPost]
-        // CreateProfile action which receives the data from the form and creates the user account
         public IActionResult CreateProfile(UserAccountVM userAccount)
         {
+            var loggedInUsername = HttpContext.Session.GetString("UserLoggedIn");
+
+            var existingUser = loginUserData.FirstOrDefault(u => u.Username == loggedInUsername);
+
+            if (existingUser == null)
+            {
+                return RedirectToAction("Login");
+            }
+
             var account = new Account
             {
                 AccountNumber = userAccount.AccountNumber,
                 currency = userAccount.Currency == "EUR" ? Account.Currency.EUR : Account.Currency.HRK,
                 Balance = 0
             };
-            // new user object with data from the form
-
+            
             var user = new User
             {
-                Username = userAccount.Username,
-                Password = userAccount.Password,
+                Username = loggedInUsername,
+                Password = existingUser.Password,
                 FirstName = userAccount.FirstName,
                 LastName = userAccount.LastName,
                 Email = userAccount.Email,
@@ -183,66 +195,190 @@ namespace IbsaAppTeam1Pra.Controllers
                 AccountOne = account
             };
             users.Add(user);
+            SaveUserProfileToFile();
+
+            HttpContext.Session.SetString("ProfileCreated", "true");
 
             TempData["AccountNumber"] = userAccount.AccountNumber;
             return RedirectToAction("AccountOptions");
         }
 
+        public void SaveUserProfileToFile()
+        {
+            using (StreamWriter sw = new StreamWriter(usersPath))
+            {
+                foreach (var user in users)
+                {
+                    sw.WriteLine($"{user.Username}{DEL}{user.Password}{DEL}{user.FirstName}{DEL}{user.LastName}{DEL}{user.Email}{DEL}{user.Oib}{DEL}{user.AccountOne.AccountNumber}{DEL}{user.AccountOne.currency}{DEL}{user.AccountOne.Balance}");
+                }
+            }
+        }
+
+        public void ReadUserProfilesFromFile()
+        {
+            if (System.IO.File.Exists(usersPath))
+            {
+                using (StreamReader sr = new StreamReader(usersPath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(DEL);
+                        var user = new User
+                        {
+                            Username = parts[0],
+                            Password = parts[1],
+                            FirstName = parts[2],
+                            LastName = parts[3],
+                            Email = parts[4],
+                            Oib = parts[5],
+                            AccountOne = new Account
+                            {
+                                AccountNumber = parts[6],
+                                currency = parts[7] == "EUR" ? Account.Currency.EUR : Account.Currency.HRK,
+                                Balance = decimal.Parse(parts[8])
+                            }
+                        };
+                        users.Add(user);
+                    }
+                }
+            }
+        }
+
         public IActionResult AccountOptions()
         {
-            string accountNumber = TempData["AccountNumber"] as string;
-            User user = new User();
-            user.AccountOne = new Account
-            {
-                AccountNumber = accountNumber,  // Set the account number from TempData
-                Balance = 0
-            };
+            //string accountNumber = TempData["AccountNumber"] as string;
+            //User user = new User();
+            //user.AccountOne = new Account
+            //{
+            //    AccountNumber = accountNumber,
+            //    Balance = 0
+            //};
 
+            //return View(user);
+            string loggedInUsername = HttpContext.Session.GetString("UserLoggedIn");
+
+            // Find the user in the list of users
+            var user = users.FirstOrDefault(u => u.Username == loggedInUsername);
+
+            if (user == null)
+            {
+                // Handle case where user is not found (e.g., session expired)
+                return RedirectToAction("Login");
+            }
+
+            // Pass the user object to the view to display account info
             return View(user);
 
         }
         [HttpPost]
         public IActionResult AccountOptions(User user)
         {
-            // check form and see if user clicked button with name Uplati or button with name createAccount
-            var balance = user.AccountOne.Balance;
+            //var balance = user.AccountOne.Balance;
+            //if (Request.Form.ContainsKey("Uplati"))
+            //{
+            //    var account = user.AccountOne;
+            //    account.Balance += balance;
+
+            //}
+            //else if (Request.Form.ContainsKey("createAccount"))
+            //{
+            //    // create second account for this user
+            //    var account = new Account
+            //    {
+            //        AccountNumber = user.AccountOne.ToString(),
+            //        currency = Account.Currency.HRK
+            //    };
+            //    user.AccountTwo = account;
+            //}
+
+            //return RedirectToAction("Dashboard", user);
+            var loggedInUsername = HttpContext.Session.GetString("UserLoggedIn");
+            var existingUser = users.FirstOrDefault(u => u.Username == loggedInUsername);
+
+            if (existingUser == null)
+            {
+                // Handle case where user is not found
+                return RedirectToAction("Login");
+            }
+
             if (Request.Form.ContainsKey("Uplati"))
             {
-                var account = user.AccountOne;
-                account.Balance += balance;
-
+                // Handle deposit to the account
+                existingUser.AccountOne.Balance += user.AccountOne.Balance; // Add deposit to the existing balance
             }
             else if (Request.Form.ContainsKey("createAccount"))
             {
-                // create second account for this user
-                var account = new Account
+                // Handle creating a second account for the user
+                if (existingUser.AccountTwo == null)
                 {
-                    AccountNumber = user.AccountOne.ToString(),
-                    currency = Account.Currency.HRK
-                };
-                user.AccountTwo = account;
+                    existingUser.AccountTwo = new Account
+                    {
+                        AccountNumber = Guid.NewGuid().ToString(), // Generate new account number
+                        currency = Account.Currency.HRK,
+                        Balance = 0
+                    };
+                }
             }
 
-            return RedirectToAction("Dashboard", user);
+            // Save the updated user details to the file
+            SaveUserProfileToFile();
+
+            return RedirectToAction("Dashboard", existingUser);
 
         }
 
         public IActionResult BankarDashboard(List<Transaction> transactionsList)
         {
-            // call ReadTransactionsFromFile(); and save them to transactions list
             ReadTransactionsFromFile();
-            // sort transactions by date
+            
             transactionsList = transactions.OrderByDescending(t => t.Date).ToList();
             return View(transactionsList);
         }
 
+        public IActionResult BankarPayment(User user)
+        {
+            Models.Transaction transaction = new();
+            transaction.Sender = user;
+            return View(transaction);
+        }
+        [HttpPost]
+        public IActionResult BankarPayment(Models.Transaction transaction)
+        {
+            var sender = transaction.Sender;
+
+            var trans = new Transaction
+            {
+                Sender = sender,
+                ReceiverName = transaction.ReceiverName,
+                ReceiverAccountNumber = transaction.ReceiverAccountNumber,
+                Amount = transaction.Amount,
+                Description = transaction.Description,
+                Date = DateTime.Now
+            };
+            // Add transaction to the list of transactions
+            transactions.Add(trans);
+            var transactionHistory = new TransactionHistory
+            {
+                SenderName = sender.FirstName + " " + sender.LastName,
+                ReceiverName = transaction.ReceiverName,
+                ReceiverAccountNumber = transaction.ReceiverAccountNumber,
+                Amount = transaction.Amount,
+                Description = transaction.Description,
+                Date = trans.Date
+            };
+            // add transaction to transactions.txt file
+            SaveTransactionsToFile();
+            transactionHistories.Add(transactionHistory);
+            transactions.Add(transaction);
+
+            return RedirectToAction("BankarDashboard");
+        }
         public IActionResult Dashboard(User user)
         {
             Transaction transaction = new Transaction();
             transaction.Sender = user;
             return View(transaction);
-
-            
         }
 
         [HttpPost]
@@ -273,7 +409,7 @@ namespace IbsaAppTeam1Pra.Controllers
             };
             // add transaction to transactions.txt file
             SaveTransactionsToFile();
-            transactionHistories.Add(transactionHistory); // Add to history
+            transactionHistories.Add(transactionHistory);
 
             return RedirectToAction("FilledDashboard");
         }
