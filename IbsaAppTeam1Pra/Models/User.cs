@@ -8,8 +8,8 @@
         public string Password { get; set; }
         public string Username { get; set; }
         public string Oib { get; set; } = "12345678901";
-        public Account AccountOne { get; set; } = null;
-        public Account AccountTwo { get; set; } = null;
+        public Account AccountOne { get; set; }
+        public Account AccountTwo { get; set; }
 
         public User()
         {
