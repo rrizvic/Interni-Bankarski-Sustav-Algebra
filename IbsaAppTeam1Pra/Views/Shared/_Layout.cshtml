@@ -29,33 +29,30 @@
                             {
                                 <!-- If the user has a profile, show Dashboard, Accounts, Logout -->
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Dashboard">Dashboard</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Dashboard">Početna stranica</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="AccountOptions">Accounts</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="AccountOptions">Računi</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CreateProfile">Profili</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Odjava</a>
                                 </li>
                             }
                             else
                             {
                                 <!-- If the user doesn't have a profile, show Create Profile and Logout -->
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CreateProfile">Create Profile</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="CreateProfile">Kreiraj profil</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Odjava</a>
                                 </li>
                             }
                         }
-                        else
-                        {
-                            <!-- If the user is not logged in, show the Login link -->
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
-                            </li>
-                        }
+                        
                     </ul>
                 </div>
 
